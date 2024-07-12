@@ -2,6 +2,7 @@ package ui
 
 import (
 	"enzappmob/internal/ui/login"
+	"enzappmob/internal/utils"
 	"fmt"
 
 	"fyne.io/fyne/app"
@@ -13,6 +14,9 @@ import (
 var appVersion string
 
 func InitializeApp() {
+
+	//Disponibiliza o arquivo de log do aplicativo
+	utils.CreateLog()
 
 	// Determina o idioma a ser utilizado (default: inglês)
 	bundle := i18n.NewBundle(language.English)

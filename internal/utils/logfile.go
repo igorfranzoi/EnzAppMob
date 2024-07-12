@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -24,13 +27,12 @@ func CreateLog() bool {
 	if logUseFile {
 
 		// Obter a data atual
-		//dateToday := time.Now()
+		dateToday := time.Now()
 
-		/*strYear := strconv.Itoa(dateToday.Year())
-		strMonth := strconv.Itoa(dateToday.Month())
-		strDay := strconv.Itoa(dateToday.Day())
+		monthString := fmt.Sprintf("%02d", dateToday.Month())
+		dayString := fmt.Sprintf("%02d", dateToday.Day())
 
-		logUseName += "_" + strYear + "_" + strMonth + "_" + strDay*/
+		logUseName += "_" + strconv.Itoa(dateToday.Year()) + "_" + monthString + "_" + dayString
 
 		logDir := logUsePath + logUseName
 
