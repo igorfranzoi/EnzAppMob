@@ -34,6 +34,8 @@ func CheckInternetConnection() bool {
 			resGet, err := http.Get(strURL)
 
 			if err == nil && resGet.StatusCode == http.StatusOK {
+				retCon = true
+
 				log.Info().Msg(fmt.Sprintf("Status de conexão: Conectado à internet (%s)", strURL))
 
 				return retCon
