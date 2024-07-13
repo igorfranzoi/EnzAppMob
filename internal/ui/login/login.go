@@ -34,7 +34,9 @@ func initApp(bundle *i18n.Bundle) {
 
 	//Verifica a conexão com a internet
 	if utils.CheckInternetConnection() {
-		fmt.Sprint(utils.GetAppIP())
+		strIP := utils.GetAppIP()
+
+		fmt.Println("Erro ao obter o IP:", strIP)
 	}
 }
 
@@ -53,10 +55,10 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 	windowLogin := (*mainApp).NewWindow("EnzTech-Mobile")
 	windowLogin.Resize(fyne.NewSize(400, 400))
 
-	// Carregar a imagem de fundo (substitua o caminho pelo seu arquivo de imagem)
+	// Carregar a imagem de fundo
 	backgroundImage := canvas.NewImageFromFile("images/mainBackgroundImage.jpg")
 	if backgroundImage != nil {
-		// Redimensionar a imagem para cobrir toda a janela
+		// Redimensionando a imagem para cobrir toda a janela
 		backgroundImage.FillMode = canvas.ImageFillStretch
 	} else {
 		log.Warn().Msg("Erro ao carregar a imagem de fundo")
@@ -98,7 +100,7 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 		container.NewCenter(container.NewHBox(
 			container.NewCenter(widget.NewIcon(theme.HomeIcon())),
 		)),
-		fieldForm,
+		//fieldForm,
 		container.NewCenter(
 			layout.NewSpacer(),
 			layout.NewSpacer(),
