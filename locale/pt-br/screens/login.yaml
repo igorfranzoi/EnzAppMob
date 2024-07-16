@@ -1,0 +1,4 @@
+user_field:
+  text: "Usuário"
+password_field:
+  text: "Senha"
