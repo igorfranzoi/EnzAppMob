@@ -10,17 +10,32 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const logUsePath string = "logs/"
+
 var logUseFile bool = true
-var logUsePath string = "logs/"
 var logUseName string = "logapp"
+
+var (
+	MsgErrVldPath    = "Erro ao verificar existência do diretório:"
+	MsgErrCreatePath = "Erro ao tentar criar o diretório"
+)
 
 func CreateLog() bool {
 
-	var retFun bool = true
+	var retFun bool = false
 
 	// Criar um diretório com permissões padrão (0777 no Unix)
-	if err := os.Mkdir(logUsePath, 0755); err != nil {
-		// Tratar erro se não for possível criar o diretório
+	if _, err := os.Stat(logUsePath); os.IsNotExist(err) {
+		// Criar um diretório com permissões padrão (0777 no Unix)
+		if err := os.Mkdir(logUsePath, 0755); err != nil {
+			log.Warn().Str("Error:", err.Error()).Msg(MsgErrCreatePath)
+
+			// Retorna  se não for possível criar o diretório
+			return retFun
+		}
+	} else if err != nil {
+		log.Warn().Str("Erro:", err.Error()).Msg(MsgErrVldPath)
+
 		return retFun
 	}
 
