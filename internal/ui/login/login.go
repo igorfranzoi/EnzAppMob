@@ -17,6 +17,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var (
+	ErrInvalidLogin = errors.New("Login failed: Invalid credentials")
+)
+
 func initApp(bundle *i18n.Bundle) {
 	utils.InitMessages(bundle)
 }
@@ -90,9 +94,9 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 			// Definindo o retorno como verdadeiro
 			loginReturn = true
 		} else {
-			// Exemplo de feedback de login inválido
-			fyne.LogError("Login failed", errors.New("invalid credentials"))
-			dialog.ShowError(errors.New("Login failed: Invalid credentials"), windowLogin)
+			log.Warn().Str("UserName", strUsername).Msg("Um animal apareceu")
+
+			dialog.ShowError(ErrInvalidLogin, windowLogin)
 		}
 	}
 
@@ -124,7 +128,8 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 
 	// Interceptando o evento de fechamento da janela para encerrar a aplicação
 	windowLogin.SetCloseIntercept(func() {
-		fmt.Println("Fechando a aplicação")
+		log.Info().Msg("Fechando a aplicação - SetCloseIntercept")
+
 		(*mainApp).Quit() // Garante que a aplicação seja fechada corretamente
 	})
 

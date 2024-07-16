@@ -20,9 +20,9 @@ func InitializeApp() {
 
 	//Verifica a conexão com a internet
 	if utils.CheckInternetConnection() {
-		strIP := utils.GetAppIP()
+		//strIP := utils.GetAppIP()
 
-		fmt.Println("Erro ao obter o IP:", strIP)
+		//fmt.Println("Erro ao obter o IP:", strIP)
 	}
 
 	// Determina o idioma a ser utilizado (default: inglês)

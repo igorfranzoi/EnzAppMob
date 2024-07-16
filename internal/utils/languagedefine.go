@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	en_us_message = "locales/en-us/screens/login.yaml"
-	pt_br_message = "locales/pt-br/screens/login.yaml"
+	en_us_message = "locale/en-us/screens/login.yaml"
+	pt_br_message = "locale/pt-br/screens/login.yaml"
 )
 
 // Carrega os arquivos de mensagens/language

@@ -12,15 +12,29 @@ import (
 
 var (
 	strGoogle string = "https://www.google.com"
-	strIpApi  string = "https://ip-api.com"
+	strIpApi  string = "http://ip-api.com"
 	strRegBr  string = "https://registro.br"
 )
 
 // Endereços para verificar a conexão
 var urlSlice = []string{strGoogle, strIpApi, strRegBr}
 
-type IP struct {
-	Query string
+// Estrutura ip-api que corresponde à estrutura do JSON
+type IPstruct struct {
+	Status      string `json:"status"`
+	Country     string `json:"country"`
+	CountryCode string `json:"countryCode"`
+	Region      string `json:"region"`
+	RegionName  string `json:"regionName"`
+	City        string `json:"city"`
+	ZipCode     string `json:"zip"`
+	Latitude    string `json:"lat"`
+	Longitude   string `json:"lon"`
+	TimeZone    string `json:"timezone"`
+	Isp         string `json:"isp"`
+	OrgIsp      string `json:"org"`
+	As          string `json:"as"`
+	IpNumber    string `json:"query"`
 }
 
 func CheckInternetConnection() bool {
@@ -48,14 +62,18 @@ func CheckInternetConnection() bool {
 	return retCon
 }
 
-func GetAppIP() string {
+func GetAppIP() (IPstruct, error) {
 
-	var ipReturn IP
+	var ipReturn IPstruct
+	var retVld bool
+
+	// Estrutura para armazenar o JSON deserializado
+	var dataAux map[string]interface{}
 
 	resGet, err := http.Get(strIpApi + "/json/")
 
 	if err != nil {
-		return err.Error()
+		return ipReturn, err
 	}
 
 	defer resGet.Body.Close()
@@ -63,10 +81,17 @@ func GetAppIP() string {
 	bodyRet, err := io.ReadAll(resGet.Body)
 
 	if err != nil {
-		return err.Error()
+		return ipReturn, err
 	}
 
-	json.Unmarshal(bodyRet, &ipReturn)
+	json.Unmarshal(bodyRet, &dataAux)
 
-	return ipReturn.Query
+	// Verificando se o atributo "email" existe
+	ipReturn.Status, retVld = dataAux["status"].(string)
+
+	if !retVld {
+		fmt.Println("O atributo 'email' não existe ou não é uma string")
+	}
+
+	return ipReturn, err
 }
