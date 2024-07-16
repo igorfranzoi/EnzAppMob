@@ -18,6 +18,13 @@ func InitializeApp() {
 	//Disponibiliza o arquivo de log do aplicativo
 	utils.CreateLog()
 
+	//Verifica a conexão com a internet
+	if utils.CheckInternetConnection() {
+		strIP := utils.GetAppIP()
+
+		fmt.Println("Erro ao obter o IP:", strIP)
+	}
+
 	// Determina o idioma a ser utilizado (default: inglês)
 	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("yaml", yaml.Unmarshal)
