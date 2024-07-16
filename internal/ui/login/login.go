@@ -2,12 +2,14 @@ package login
 
 import (
 	"enzappmob/internal/utils"
+	"errors"
 	"fmt"
 	"os"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/container"
+	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
@@ -15,29 +17,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var (
-	en_us_message = "locales/en-us/screens/login.yaml"
-	pt_br_message = "locales/pt-br/screens/login.yaml"
-)
-
 func initApp(bundle *i18n.Bundle) {
-	// Carrega arquivos de mensagens
-	if err := utils.LoadMessages(bundle, en_us_message); err != nil {
-		log.Warn().Msg(fmt.Sprintf("Error loading messages: %v\n ", err))
-		//os.Exit(1)
-	}
-
-	if err := utils.LoadMessages(bundle, pt_br_message); err != nil {
-		log.Warn().Msg(fmt.Sprintf("Error loading messages: %v\n", err))
-		//os.Exit(1)
-	}
-
-	//Verifica a conexão com a internet
-	if utils.CheckInternetConnection() {
-		strIP := utils.GetAppIP()
-
-		fmt.Println("Erro ao obter o IP:", strIP)
-	}
+	utils.InitMessages(bundle)
 }
 
 // Tela de Login
@@ -67,16 +48,19 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 	// Obter o diretório de trabalho atual
 	completePath, err := os.Getwd()
 	if err != nil {
-		fmt.Println("Erro ao obter o diretório de trabalho:", err)
+		log.Warn().Msg("Erro ao obter o diretório de trabalho: " + err.Error())
 	} else {
 		//Exemplo de ícone (pode ser substituído)
 		rscImg, _ := utils.ResourcePathLoad(completePath + "/images/enztech_favicon.png")
 		windowLogin.SetIcon(rscImg)
 	}
 
+	entryUserName := widget.NewEntry()
+	entryPassword := widget.NewPasswordEntry()
+
 	fieldForm := widget.NewForm(
-		widget.NewFormItem("UserName", widget.NewEntry()),
-		widget.NewFormItem("Password", widget.NewPasswordEntry()),
+		widget.NewFormItem("UserName", entryUserName),
+		widget.NewFormItem("Password", entryPassword),
 	)
 
 	// working on cancel and submit functions of form
@@ -84,11 +68,32 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 		lblButton := widget.NewLabel("")
 		lblButton.Text = "Canceled"
 		lblButton.Refresh()
+
+		(*mainApp).Quit()
 	}
+
 	fieldForm.OnSubmit = func() {
-		lblButton := widget.NewLabel("")
+		/*lblButton := widget.NewLabel("")
 		lblButton.Text = "submitted"
-		lblButton.Refresh()
+		lblButton.Refresh()*/
+		strUsername := entryUserName.Text
+		strPassword := entryPassword.Text
+
+		// Lógica de validação do usuário e senha
+		if strUsername == "admin" && strPassword == "admin" {
+			// Login válido, podemos fechar a janela de login
+			windowLogin.Close()
+
+			// Chamando a próxima tela (exemplo: menu)
+			//MenuScreen(mainApp, bundle) // Implemente a função MenuScreen
+
+			// Definindo o retorno como verdadeiro
+			loginReturn = true
+		} else {
+			// Exemplo de feedback de login inválido
+			fyne.LogError("Login failed", errors.New("invalid credentials"))
+			dialog.ShowError(errors.New("Login failed: Invalid credentials"), windowLogin)
+		}
 	}
 
 	// Botão com ícone para ir para a tela de configuração
@@ -100,11 +105,7 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 		container.NewCenter(container.NewHBox(
 			container.NewCenter(widget.NewIcon(theme.HomeIcon())),
 		)),
-		//fieldForm,
-		container.NewCenter(
-			layout.NewSpacer(),
-			layout.NewSpacer(),
-		),
+		fieldForm,
 		layout.NewSpacer(),
 		container.NewHBox(
 			layout.NewSpacer(), // Espaçador à esquerda
