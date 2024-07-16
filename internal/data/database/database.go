@@ -10,7 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// var dbTypeGorm *gorm.DB
 var dataBasePath string = "enzDatabase/"
 var dataBaseName string = "enztechapp.db"
 
@@ -19,7 +18,7 @@ var (
 	MsgErrCreateTable = "Erro de criação da tabela..."
 	MsgCreateTable    = "Tabela criada"
 	MsgErrVldPath     = "Erro ao verificar existência do diretório:"
-	MsgErrCreatePath  = "Erro ao verificar existência do diretório:"
+	MsgErrCreatePath  = "Erro ao tentar criar o diretório"
 )
 
 func Connect() (*gorm.DB, error) {
