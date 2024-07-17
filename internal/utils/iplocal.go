@@ -10,6 +10,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const strMsgErro = "GetAppIP - Problema na carga dos dados de localização/IP - : "
+
 var (
 	strGoogle string = "https://www.google.com"
 	strIpApi  string = "http://ip-api.com"
@@ -19,24 +21,6 @@ var (
 // Endereços para verificar a conexão
 var urlSlice = []string{strGoogle, strIpApi, strRegBr}
 
-// Estrutura ip-api que corresponde à estrutura do JSON
-type IPstruct struct {
-	Status      string `json:"status"`
-	Country     string `json:"country"`
-	CountryCode string `json:"countryCode"`
-	Region      string `json:"region"`
-	RegionName  string `json:"regionName"`
-	City        string `json:"city"`
-	ZipCode     string `json:"zip"`
-	Latitude    string `json:"lat"`
-	Longitude   string `json:"lon"`
-	TimeZone    string `json:"timezone"`
-	Isp         string `json:"isp"`
-	OrgIsp      string `json:"org"`
-	As          string `json:"as"`
-	IpNumber    string `json:"query"`
-}
-
 func CheckInternetConnection() bool {
 
 	var retCon bool = false
@@ -45,9 +29,9 @@ func CheckInternetConnection() bool {
 		for tryCon := 0; tryCon < 3; tryCon++ {
 			log.Warn().Msg(fmt.Sprintf("Tentando verificar %s, tentativa %d...\n", strURL, tryCon+1))
 
-			resGet, err := http.Get(strURL)
+			getRes, err := http.Get(strURL)
 
-			if err == nil && resGet.StatusCode == http.StatusOK {
+			if err == nil && getRes.StatusCode == http.StatusOK {
 				retCon = true
 
 				log.Info().Msg(fmt.Sprintf("Status de conexão: Conectado à internet (%s)", strURL))
@@ -62,36 +46,29 @@ func CheckInternetConnection() bool {
 	return retCon
 }
 
-func GetAppIP() (IPstruct, error) {
+func GetAppIP() map[string]interface{} {
 
-	var ipReturn IPstruct
-	var retVld bool
+	var ipReturn map[string]interface{}
 
-	// Estrutura para armazenar o JSON deserializado
-	var dataAux map[string]interface{}
-
-	resGet, err := http.Get(strIpApi + "/json/")
+	getRes, err := http.Get(strIpApi + "/json/")
 
 	if err != nil {
-		return ipReturn, err
+		log.Warn().Msg(strMsgErro + err.Error())
+
+		return ipReturn
 	}
 
-	defer resGet.Body.Close()
+	defer getRes.Body.Close()
 
-	bodyRet, err := io.ReadAll(resGet.Body)
+	bodyRet, err := io.ReadAll(getRes.Body)
 
 	if err != nil {
-		return ipReturn, err
+		log.Warn().Msg(strMsgErro + err.Error())
+
+		return ipReturn
 	}
 
-	json.Unmarshal(bodyRet, &dataAux)
+	json.Unmarshal(bodyRet, &ipReturn)
 
-	// Verificando se o atributo "email" existe
-	ipReturn.Status, retVld = dataAux["status"].(string)
-
-	if !retVld {
-		fmt.Println("O atributo 'email' não existe ou não é uma string")
-	}
-
-	return ipReturn, err
+	return ipReturn
 }

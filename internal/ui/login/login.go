@@ -1,6 +1,7 @@
 package login
 
 import (
+	"enzappmob/internal/ui/appconfig"
 	"enzappmob/internal/utils"
 	"errors"
 	"fmt"
@@ -13,31 +14,29 @@ import (
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/rs/zerolog/log"
 )
+
+var languageFile string = "login.yaml"
 
 var (
 	ErrInvalidLogin = errors.New("Login failed: Invalid credentials")
 )
 
-func initApp(bundle *i18n.Bundle) {
-	utils.InitMessages(bundle)
-}
-
 // Tela de Login
-func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
+// func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle, connected bool, gormConnect *gorm.DB) bool {
+func LoginScreen(mainApp *appconfig.AppGeneral) bool {
 
 	var loginReturn bool = true
 
 	//Iniciando tela de login
 	log.Info().Msg("Iniciando Login Screen")
 
-	//Inicializar
-	initApp(bundle)
+	//Inicializar mensagens para a tela de login
+	utils.InitMessages(mainApp.Bundle, mainApp.CurrentLanguage, languageFile)
 
 	//Constrói o app inicial, utilizado por todas as aplicações
-	windowLogin := (*mainApp).NewWindow("EnzTech-Mobile")
+	windowLogin := (*mainApp.MainApp).NewWindow("EnzTech-Mobile")
 	windowLogin.Resize(fyne.NewSize(400, 400))
 
 	// Carregar a imagem de fundo
@@ -62,8 +61,11 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 	entryUserName := widget.NewEntry()
 	entryPassword := widget.NewPasswordEntry()
 
+	//bundle  = i18n.Localizer
+
 	fieldForm := widget.NewForm(
 		widget.NewFormItem("UserName", entryUserName),
+		//widget.NewFormItem(mainApp.Bundle, entryUserName),
 		widget.NewFormItem("Password", entryPassword),
 	)
 
@@ -73,13 +75,10 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 		lblButton.Text = "Canceled"
 		lblButton.Refresh()
 
-		(*mainApp).Quit()
+		(*mainApp.MainApp).Quit()
 	}
 
 	fieldForm.OnSubmit = func() {
-		/*lblButton := widget.NewLabel("")
-		lblButton.Text = "submitted"
-		lblButton.Refresh()*/
 		strUsername := entryUserName.Text
 		strPassword := entryPassword.Text
 
@@ -130,7 +129,7 @@ func LoginScreen(mainApp *fyne.App, bundle *i18n.Bundle) bool {
 	windowLogin.SetCloseIntercept(func() {
 		log.Info().Msg("Fechando a aplicação - SetCloseIntercept")
 
-		(*mainApp).Quit() // Garante que a aplicação seja fechada corretamente
+		(*mainApp.MainApp).Quit() // Garante que a aplicação seja fechada corretamente
 	})
 
 	windowLogin.ShowAndRun()

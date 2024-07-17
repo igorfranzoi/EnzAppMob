@@ -1,0 +1,34 @@
+# Arquivos de compilação gerados
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Arquivos de log e dados
+*.log
+*.csv
+
+# Diretórios de dependências
+/vendor/
+/node_modules/
+
+# Arquivos de configuração sensíveis
+config.json
+.env
+
+# Arquivos de IDE específicos
+.vscode/
+.idea/
+
+# Arquivos de sistema operacional e cache
+.DS_Store
+Thumbs.db
+*.swp
+
+# Diretórios do Database local
+/enzDatabase/
+
+# Diretórios de Log´s
+/logs/
